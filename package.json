@@ -1,0 +1,25 @@
+{
+  "name": "@03matteo/economy-system",
+  "version": "1.0.0",
+  "description": "A package that simplifies the creation of an economy system.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/03Matteo/Economy-System.git"
+  },
+  "keywords": [
+    "economy-system",
+    "economy",
+    "life-simulator",
+    "work-simulator"
+  ],
+  "author": "03Matteo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/03Matteo/Economy-System/issues"
+  },
+  "homepage": "https://github.com/03Matteo/Economy-System#readme"
+}
