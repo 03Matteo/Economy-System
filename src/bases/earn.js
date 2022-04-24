@@ -1,5 +1,5 @@
 const help = () => {
-    return 'Here some infoes';//da informazioni dettagliate
+    return 'Here some infoes';
 }
 
 module.exports = class Earn {
