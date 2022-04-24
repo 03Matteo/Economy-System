@@ -2,9 +2,10 @@
   "name": "@03matteo/economy-system",
   "version": "1.0.0",
   "description": "A package that simplifies the creation of an economy system.",
-  "main": "index.js",
+  "main": "./src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ."
   },
   "repository": {
     "type": "git",
