@@ -5,6 +5,13 @@ const help = () => {
 module.exports = class Earn {
     static types = ['work', 'slut', 'rob', 'crime'];
 
+    static sentences = {
+        work: [],
+        slut: [],
+        rob: [],
+        crime: []
+    }
+
     constructor({
         minWin,
         maxWin,
