@@ -76,15 +76,15 @@ module.exports = class Crime extends Earn {
         this.randomSentences = randomSentences || false;
 
         this._sentences = {
-            win: ['crime win'],
-            zero: ['crime zero'],
-            lose: ['crime lose']
+            win: [],
+            zero: [],
+            lose: []
         }
 
         validateProps(this.minWin, this.maxWin, this.zeroChance, this.minLose, this.maxLose, this.chance, this.randomSentences);
     }
 
-    getValue() {
+    getValues() {
         const min = this.minWin;
         const max = this.maxWin;
         const zeroChance = this.zeroChance;

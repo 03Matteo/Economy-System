@@ -52,8 +52,8 @@ module.exports = class Work extends Earn {
         this.randomSentences = randomSentences || false;
 
         this._sentences = {
-            win: ['work win'],
-            zero: ['work zero']
+            win: [],
+            zero: []
         }
 
         validateProps(this.minWin, this.maxWin, this.zeroChance, this.randomSentences);

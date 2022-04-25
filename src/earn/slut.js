@@ -76,9 +76,9 @@ module.exports = class Slut extends Earn {
         this.randomSentences = randomSentences || false;
 
         this._sentences = {
-            win: ['slut win'],
-            zero: ['slut zero'],
-            lose: ['slut lose'],
+            win: [],
+            zero: [],
+            lose: [],
         }
 
         validateProps(this.minWin, this.maxWin, this.zeroChance, this.minLose, this.maxLose, this.chance, this.randomSentences);
