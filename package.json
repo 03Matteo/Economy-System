@@ -1,6 +1,6 @@
 {
   "name": "@03matteo/economy-system",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A package that simplifies the creation of an economy system.",
   "main": "./src/main.js",
   "scripts": {
