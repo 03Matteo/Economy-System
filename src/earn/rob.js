@@ -1,21 +1,16 @@
 const Earn = require('../bases/earn');
 
-const validateProps = (userId, minWin, maxWin, zeroChance, minLose, maxLose, chance, prisonChance) => {
-
-    if (typeof userId !== 'string')
-        throw new TypeError(`Cannot accept property 'userId' as ${userId.length || userId.length === 0 ? 'array' : typeof userId}.`);
-    if (isNaN(parseInt(userId)))
-        throw new TypeError(`Invalid 'userId' given, check for what are you trying to provide.`);
+const validateProps = (minWin, maxWin, zeroChance, minLose, maxLose, chance, randomSentences) => {
 
     if (typeof minWin !== 'number')
-        throw new TypeError(`Cannot accept property 'minWin' as ${typeof minWin !== 'undefined' && (minWin.length || minWin.length === 0) && typeof minWin !== 'string' ? 'array' : typeof minWin}.`);
+        throw new TypeError(`Cannot accept property 'minWin' as ${typeof minWin !== 'undefined' && minWin !== null && typeof minWin !== 'string' && (minWin.length >= 0) ? 'array' : minWin !== null ? typeof minWin : null}.`);
     if (typeof maxWin !== 'number')
-        throw new TypeError(`Cannot accept property 'maxWin' as ${typeof maxWin !== 'undefined' && (maxWin.length || maxWin.length === 0) && typeof maxWin !== 'string' ? 'array' : typeof maxWin}.`);
+        throw new TypeError(`Cannot accept property 'maxWin' as ${typeof maxWin !== 'undefined' && maxWin !== null && typeof maxWin !== 'string'(maxWin.length >= 0) ? 'array' : maxWin !== null ? typeof maxWin : null}.`);
 
     if (typeof minLose !== 'number')
-        throw new TypeError(`Cannot accept property 'minLose' as ${typeof minLose !== 'undefined' && (minLose.length || minLose.length === 0) && typeof minLose !== 'string' ? 'array' : typeof minLose}.`);
+        throw new TypeError(`Cannot accept property 'minLose' as ${typeof minLose !== 'undefined' && minLose !== null && typeof minLose !== 'string' && (minLose.length >= 0) ? 'array' : minLose !== null ? typeof minLose : null}.`);
     if (typeof maxLose !== 'number')
-        throw new TypeError(`Cannot accept property 'maxLose' as ${typeof maxLose !== 'undefined' && (maxLose.length || maxLose.length === 0) && typeof maxLose !== 'string' ? 'array' : typeof maxLose}.`);
+        throw new TypeError(`Cannot accept property 'maxLose' as ${typeof maxLose !== 'undefined' && maxLose !== null && typeof maxLose !== 'string' && (maxLose.length >= 0) ? 'array' : maxLose !== null ? typeof maxLose : null}.`);
 
     if (minWin <= 0 || maxWin <= 0)
         throw new Error(`The property '${minWin <= 0 ? 'minWin' : 'maxWin'}' cannot be less or equal to zero.`);
@@ -23,9 +18,9 @@ const validateProps = (userId, minWin, maxWin, zeroChance, minLose, maxLose, cha
         throw new Error(`The property 'minWin' cannot be greater than 'maxWin'.`);
 
     if (typeof zeroChance !== 'number')
-        throw new TypeError(`Cannot accept property 'zeroChance' as ${typeof zeroChance !== 'undefined' && (zeroChance.length || zeroChance.length === 0) && typeof zeroChance !== 'string' ? 'array' : typeof zeroChance}.`);
-    if (zeroChance < 0.01 || zeroChance > 100)
-        throw new Error(`Be sure to set property 'zeroChance' between 0.01 and 100 (included).`);
+        throw new TypeError(`Cannot accept property 'zeroChance' as ${typeof zeroChance !== 'undefined' && zeroChance !== null && typeof zeroChance !== 'string' && (zeroChance.length >= 0) ? 'array' : zeroCHance !== null ? typeof zeroChance : null}.`);
+    if (zeroChance < 0 || zeroChance > 100)
+        throw new Error(`Be sure to set property 'zeroChance' between 0 and 100 (included).`);
 
     if (minLose <= 0 || maxLose <= 0)
         throw new Error(`The property '${minLose <= 0 ? 'minLose' : 'maxLose'}' cannot be less or equal to zero.`);
@@ -33,49 +28,60 @@ const validateProps = (userId, minWin, maxWin, zeroChance, minLose, maxLose, cha
         throw new Error(`The property 'minLose' cannot be greater than 'maxLose'.`);
 
     if (typeof chance !== 'number')
-        throw new TypeError(`Cannot accept property 'chance' as ${typeof chance !== 'undefined' && (chance.length || chance.length === 0) && typeof chance !== 'string' ? 'array' : typeof chance}.`);
+        throw new TypeError(`Cannot accept property 'chance' as ${typeof chance !== 'undefined' && chance !== null && typeof chance !== 'string' && (chance.length >= 0) ? 'array' : chance !== null ? typeof chance : null}.`);
     if (chance < 0.01 || chance > 100)
-        throw new Error(`Be sure to set property 'zeroChance' between 0.01 and 100 (included).`);
+        throw new Error(`Be sure to set property 'zeroChance' between 0 and 100 (included).`);
 
-    if (typeof prisonChance !== 'number')
-        throw new TypeError(`Cannot accept property 'prisonChance' as ${typeof prisonChance !== 'undefined' && (prisonChance.length || prisonChance.length === 0) && typeof prisonChance !== 'string' ? 'array' : typeof prisonChance}.`);
-    if (prisonChance < 0.01 || prisonChance > 100)
-        throw new Error(`Be sure to set property 'prisonChance' between 0.01 and 100 (included).`);
+    if (typeof randomSentences !== 'boolean')
+        throw new TypeError(`Cannot accept property 'randomSentences' as ${typeof randomSentences !== 'undefined' && randomSentences !== null && typeof randomSentences !== 'string' && (randomSentences.length >= 0) ? 'array' : randomSentences !== null ? typeof randomSentences : null}`);
+}
+
+const validateSentences = (type, sentence) => {
+    if (typeof type !== 'string' || !['win', 'zero', 'lose'].some(t => type.toLowerCase() === t))
+        throw new TypeError(`Invalid sentence type '${type}', please provide one of these |lose-zero-win|.`);
+    if (typeof sentence !== 'string')
+        throw new TypeError(`Cannot accept parameter 'sentence' as ${typeof sentence !== 'undefined' && sentence !== null && typeof sentence !== 'string' && (sentence.length >= 0) ? 'array' : sentence !== null ? typeof sentence : null}.`);
+    if (!sentence.length) {
+        throw new Error(`Sentence too short.`)
+    }
 }
 
 module.exports = class Rob extends Earn {
     /**
-    * @param {string} userId - The ID of the user that run the command
     * @param {number} minWin - The minimum amount of earn
     * @param {number} maxWin - The maximum amount of earn
     * @param {number} zeroChance - The chance to recive 0 coins
     * @param {number} minLose - The minimum amount of lose
     * @param {number} maxLose - The maximum amount of lose
     * @param {number} chance - The chance to win or lose coins
-    * @param {number} prisonChance - The chance to be jailed
+    * @param {boolean} randomSentences - By default is false, enable or not random sentences output
     */
     constructor({
-        userId,
         minWin,
         maxWin,
         zeroChance,
         minLose,
         maxLose,
         chance,
-        prisonChance,
+        randomSentences
     }) {
-        super(userId, minWin, maxWin, zeroChance, minLose, maxLose, chance, prisonChance);
+        super(minWin, maxWin, zeroChance, minLose, maxLose, chance, randomSentences);
 
-        this.userId = userId;
         this.minWin = minWin;
         this.maxWin = maxWin;
-        this.zeroChance = zeroChance;
+        this.zeroChance = zeroChance || 0;
         this.minLose = minLose;
         this.maxLose = maxLose;
         this.chance = chance;
-        this.prisonChance = prisonChance;
+        this.randomSentences = randomSentences || false;
 
-        validateProps(this.userId, this.minWin, this.maxWin, this.zeroChance, this.minLose, this.maxLose, this.chance, this.prisonChance);
+        this._sentences = {
+            win: ['rob win'],
+            zero: ['rob zero'],
+            lose: ['rob lose']
+        }
+
+        validateProps(this.minWin, this.maxWin, this.zeroChance, this.minLose, this.maxLose, this.chance, this.randomSentences);
     }
 
     getValue() {
@@ -85,15 +91,17 @@ module.exports = class Rob extends Earn {
         const minL = this.minLose;
         const maxL = this.maxLose;
         const chance = this.chance;
-        const prisonChance = this.prisonChance;
+        const { zero, win, lose } = this.sentences;
 
-        const zero = Math.random() <= zeroChance / 100;
+        const zeroBool = Math.random() <= zeroChance / 100;
 
-        if (zero) return 0;
-
-        const prison = Math.random() <= prisonChance / 100;
-
-        if (prison) return 'prison';
+        if (zeroBool) {
+            if (this.randomSentences) return {
+                value: 0,
+                sentence: zero[Math.floor(Math.random() * zero.length)]
+            }
+            return { value: 0 };
+        }
 
         const success = Math.random() <= chance / 100;
 
@@ -104,7 +112,12 @@ module.exports = class Rob extends Earn {
                 output = Math.round(Math.random() * max);
             }
 
-            return output;
+            if (this.sentences) return {
+                value: output,
+                sentence: win[Math.floor(Math.random() * win.length)]
+            }
+
+            return { value: output };
         }
 
         let output = minL - 1;
@@ -113,7 +126,26 @@ module.exports = class Rob extends Earn {
             output = Math.round(Math.random() * maxL);
         }
 
-        return -output;
+        if (this.sentences) return {
+            value: -output,
+            sentence: lose[Math.floor(Math.random() * lose.length)]
+        }
+
+        return { value: -output };
+    }
+
+    get sentences() {
+        return this._sentences;
+    }
+
+    /** 
+     * @param {string} type
+     * @param {string} sentence
+     */
+    addSentence(type, sentence) {
+        validateSentences(type, sentence);
+        this._sentences[type].push(sentence);
+        return this;
     }
 
     help() {
