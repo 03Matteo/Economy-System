@@ -1,3 +1,5 @@
+const invSchema = require('../schemas/inventories-schema');
+
 const help = () => {
     return 'Here some infoes...';
 }
@@ -21,6 +23,8 @@ module.exports = class Earn {
         this.maxLose = maxLose;
         this.chance = chance;
         this.randomSentences = randomSentences;
+
+        this.invSchema = invSchema;
     }
 
     help() {

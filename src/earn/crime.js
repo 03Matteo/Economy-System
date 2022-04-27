@@ -66,6 +66,7 @@ module.exports = class Crime extends Earn {
         randomSentences
     }) {
         super(minWin, maxWin, zeroChance, minLose, maxLose, chance, randomSentences);
+        this.invSchema = super.invSchema;
 
         this.minWin = minWin;
         this.maxWin = maxWin;

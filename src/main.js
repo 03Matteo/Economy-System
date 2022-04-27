@@ -1,7 +1,11 @@
-const Initialize = require('./initialize');
+const Initialize = require('./start/initialize');
+const Help = require('./start/help');
 const earn = require('./exports/earn');
 
+Initialize('mognoUrl', true);
+
 module.exports = {
-    Initialize,//work in progress
+    Initialize,
+    Help,
     earn
 }

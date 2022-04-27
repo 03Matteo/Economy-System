@@ -45,6 +45,7 @@ module.exports = class Work extends Earn {
         randomSentences
     }) {
         super(minWin, maxWin, zeroChance, randomSentences);
+        this.invSchema = super.invSchema;
 
         this.minWin = minWin;
         this.maxWin = maxWin;
