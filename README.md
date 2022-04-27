@@ -14,7 +14,7 @@ Then ...
 const es = require('@03matteo/economy-system');
 es.Help();
 
-or
+//or
 
 const { Help } = require('@03matteo/economy-system');
 Help();
