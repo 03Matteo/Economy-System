@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/03Matteo/Economy-System#readme",
   "dependencies": {
+    "dotenv": "^16.0.0",
     "mongoose": "^6.3.1"
   }
 }
