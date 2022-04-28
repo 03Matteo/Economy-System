@@ -1,10 +1,9 @@
 {
   "name": "@03matteo/economy-system",
   "version": "0.1.1",
-  "description": "A package that simplifies the creation of an economy system.",
+  "description": "A package that simplifies the creation of an economy system (database included).",
   "main": "./src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ."
   },
   "repository": {
