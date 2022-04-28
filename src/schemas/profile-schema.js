@@ -20,14 +20,6 @@ module.exports = model('currency-profiles', new Schema({
     },
     bag: reqNum,
     bank: reqNum,
-    sentences: {
-        earn: {
-            work: [reqString],
-            slut: [reqString],
-            rob: [reqString],
-            crime: [reqString]
-        }
-    },
     allCmds: {
         earn: {
             work: reqNum,

@@ -1,5 +1,6 @@
 const Earn = require('../bases/earn');
 const profileSchema = require('../schemas/profile-schema');
+const newUser = require('../utils/newUser');
 
 module.exports = class Work extends Earn {
     constructor({
@@ -17,48 +18,53 @@ module.exports = class Work extends Earn {
 
         validateProps(this.userId, this.minWin, this.maxWin, this.zeroChance);
 
-        this.obj = {
-            value: 0
+        this.data = {
+            value: null
         }
     }
 
-    async getData() {
+    getData() {
         const min = this.minWin;
         const max = this.maxWin;
         const zeroChance = this.zeroChance;
-        const obj = this.obj;
+        const data = this.data;
 
         const zeroBool = Math.random() <= zeroChance / 100;
-        if (zeroBool) return obj;
+        if (zeroBool) {
+            this.data.value = 0;
+            return this;
+        }
 
         let output = min - 1;
         while (output < min) {
             output = Math.round(Math.random() * max);
         }
 
-        obj.value = output;
-        return obj, this;
+        data.value = output;
+        return this;
     }
 
-    async save() {
+    async save(log = false) {
+        if (this.data.value === null)
+            throw new Error(`You cannot call 'save()' before 'getData()'.`);
+
         await profileSchema.findOneAndUpdate({
             userId: this.userId
         }, {
             userId: this.userId,
             lastUpdated: new Date(),
             $inc: {
-                bag: +this.obj.value,
-                "allCmds.earn.work": + 1
+                bag: +this.data.value,
+                'allCmds.earn.work': + 1
             }
         }, {
             upsert: true
+        }).then(() => {
+            if (typeof log === 'boolean' && log) {
+                const date = new Date();
+                console.log(`[${date.toLocaleDateString().replace(/\//g, '-')} | ${date.getHours()}:${date.getMinutes()}] Succesfully saved to MongoDB all data!`);
+            }
         })
-    }
-
-    addSentence(type, sentence) {
-        validateSentence(type, sentence);
-
-        return this;
     }
 }
 
@@ -66,6 +72,8 @@ const validateProps = (userId, minWin, maxWin, zeroChance) => {
 
     if (typeof userId !== 'string')
         throw new TypeError(`Cannot accept property 'userId' as ${typeof userId !== 'undefined' && userId !== null && typeof userId !== 'string' && (userId.length >= 0) ? 'array' : userId !== null ? typeof userId : null}.`);
+    if (!userId.length)
+        throw new TypeError(`Cannot accept property 'userId' as an empty string.`);
 
     if (typeof minWin !== 'number')
         throw new TypeError(`Cannot accept property 'minWin' as ${typeof minWin !== 'undefined' && minWin !== null && typeof minWin !== 'string' && (minWin.length >= 0) ? 'array' : minWin !== null ? typeof minWin : null}.`);
@@ -78,17 +86,7 @@ const validateProps = (userId, minWin, maxWin, zeroChance) => {
         throw new Error(`The property 'minWin' cannot be greater than 'maxWin'.`);
 
     if (typeof zeroChance !== 'number')
-        throw new TypeError(`Cannot accept property 'zeroChance' as ${typeof zeroChance !== 'undefined' && zeroChance !== null && typeof zeroChance !== 'string' && (zeroChance.length >= 0) ? 'array' : zeroCHance !== null ? typeof zeroChance : null}.`);
+        throw new TypeError(`Cannot accept property 'zeroChance' as ${typeof zeroChance !== 'undefined' && zeroChance !== null && typeof zeroChance !== 'string' && (zeroChance.length >= 0) ? 'array' : zeroChance !== null ? typeof zeroChance : null}.`);
     if (zeroChance < 0 || zeroChance > 100)
         throw new Error(`Be sure to set property 'zeroChance' between 0 and 100 (included).`);
-}
-
-const validateSentence = (type, sentence) => {
-    if (typeof type !== 'string' || !['win', 'zero'].some(t => type === t || type === t.toUpperCase()))
-        throw new TypeError(`Invalid sentence type '${type}', please provide one of these |win-zero|.`);
-    if (typeof sentence !== 'string')
-        throw new TypeError(`Cannot accept parameter 'sentence' as ${typeof sentence !== 'undefined' && sentence !== null && typeof sentence !== 'string' && (sentence.length >= 0) ? 'array' : sentence !== null ? typeof sentence : null}.`);
-    if (!sentence.length) {
-        throw new Error(`The sentence is too short.`)
-    }
 }

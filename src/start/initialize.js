@@ -1,8 +1,5 @@
 const mongoose = require('mongoose');
-/**
- * @param {string} Mongo_URL - `The MongoDB connection string`
- * @param {boolean} log `Log if the connection has succeded`
- */
+
 module.exports = async (Mongo_URL, log = false) => {
     if (typeof Mongo_URL !== 'string' || !Mongo_URL.startsWith('mongodb'))
         throw new Error(`Invalid Mongo URL provided.`);
