@@ -11,10 +11,8 @@ const reqNum = {
     default: 0
 }
 
-module.exports = model('currency-inventories', new Schema({
-    //guildId: reqString - if you wanna make the system separate from each server
+module.exports = model('currency-profiles', new Schema({
     userId: reqString,
-    userName: reqString,
     lastUpdated: {
         type: Date,
         requried: true,
@@ -22,6 +20,14 @@ module.exports = model('currency-inventories', new Schema({
     },
     bag: reqNum,
     bank: reqNum,
+    sentences: {
+        earn: {
+            work: [reqString],
+            slut: [reqString],
+            rob: [reqString],
+            crime: [reqString]
+        }
+    },
     allCmds: {
         earn: {
             work: reqNum,

@@ -1,6 +1,71 @@
 const Earn = require('../bases/earn');
+const profileSchema = require('../schemas/profile-schema');
 
-const validateProps = (minWin, maxWin, zeroChance, randomSentences) => {
+module.exports = class Work extends Earn {
+    constructor({
+        userId,
+        minWin,
+        maxWin,
+        zeroChance
+    }) {
+        super(userId, minWin, maxWin, zeroChance);
+
+        this.userId = userId;
+        this.minWin = minWin;
+        this.maxWin = maxWin;
+        this.zeroChance = zeroChance || 0;
+
+        validateProps(this.userId, this.minWin, this.maxWin, this.zeroChance);
+
+        this.obj = {
+            value: 0
+        }
+    }
+
+    async getData() {
+        const min = this.minWin;
+        const max = this.maxWin;
+        const zeroChance = this.zeroChance;
+        const obj = this.obj;
+
+        const zeroBool = Math.random() <= zeroChance / 100;
+        if (zeroBool) return obj;
+
+        let output = min - 1;
+        while (output < min) {
+            output = Math.round(Math.random() * max);
+        }
+
+        obj.value = output;
+        return obj, this;
+    }
+
+    async save() {
+        await profileSchema.findOneAndUpdate({
+            userId: this.userId
+        }, {
+            userId: this.userId,
+            lastUpdated: new Date(),
+            $inc: {
+                bag: +this.obj.value,
+                "allCmds.earn.work": + 1
+            }
+        }, {
+            upsert: true
+        })
+    }
+
+    addSentence(type, sentence) {
+        validateSentence(type, sentence);
+
+        return this;
+    }
+}
+
+const validateProps = (userId, minWin, maxWin, zeroChance) => {
+
+    if (typeof userId !== 'string')
+        throw new TypeError(`Cannot accept property 'userId' as ${typeof userId !== 'undefined' && userId !== null && typeof userId !== 'string' && (userId.length >= 0) ? 'array' : userId !== null ? typeof userId : null}.`);
 
     if (typeof minWin !== 'number')
         throw new TypeError(`Cannot accept property 'minWin' as ${typeof minWin !== 'undefined' && minWin !== null && typeof minWin !== 'string' && (minWin.length >= 0) ? 'array' : minWin !== null ? typeof minWin : null}.`);
@@ -16,95 +81,14 @@ const validateProps = (minWin, maxWin, zeroChance, randomSentences) => {
         throw new TypeError(`Cannot accept property 'zeroChance' as ${typeof zeroChance !== 'undefined' && zeroChance !== null && typeof zeroChance !== 'string' && (zeroChance.length >= 0) ? 'array' : zeroCHance !== null ? typeof zeroChance : null}.`);
     if (zeroChance < 0 || zeroChance > 100)
         throw new Error(`Be sure to set property 'zeroChance' between 0 and 100 (included).`);
-
-    if (typeof randomSentences !== 'boolean')
-        throw new TypeError(`Cannot accept property 'randomSentences' as ${typeof randomSentences !== 'undefined' && randomSentences !== null && typeof randomSentences !== 'string' && (randomSentences.length >= 0) ? 'array' : randomSentences !== null ? typeof randomSentences : null}`);
 }
 
-const validateSentences = (type, sentence) => {
-    if (typeof type !== 'string' || !['win', 'zero'].some(t => type.toLowerCase() === t))
+const validateSentence = (type, sentence) => {
+    if (typeof type !== 'string' || !['win', 'zero'].some(t => type === t || type === t.toUpperCase()))
         throw new TypeError(`Invalid sentence type '${type}', please provide one of these |win-zero|.`);
     if (typeof sentence !== 'string')
         throw new TypeError(`Cannot accept parameter 'sentence' as ${typeof sentence !== 'undefined' && sentence !== null && typeof sentence !== 'string' && (sentence.length >= 0) ? 'array' : sentence !== null ? typeof sentence : null}.`);
     if (!sentence.length) {
-        throw new Error(`Sentence too short.`)
-    }
-}
-
-module.exports = class Work extends Earn {
-    /**
-     * @param {number} minWin - The minimum amount of earn
-     * @param {number} maxWin - The maximum amount of earn
-     * @param {number} zeroChance - The chance to recive 0 coins
-     * @param {boolean} randomSentences - By default is false, enable or not random sentences output
-     */
-    constructor({
-        minWin,
-        maxWin,
-        zeroChance,
-        randomSentences
-    }) {
-        super(minWin, maxWin, zeroChance, randomSentences);
-        this.invSchema = super.invSchema;
-
-        this.minWin = minWin;
-        this.maxWin = maxWin;
-        this.zeroChance = zeroChance || 0;
-        this.randomSentences = randomSentences || false;
-
-        this._sentences = {
-            win: [],
-            zero: []
-        }
-
-        validateProps(this.minWin, this.maxWin, this.zeroChance, this.randomSentences);
-    }
-
-    getValues() {
-        const min = this.minWin;
-        const max = this.maxWin;
-        const zeroChance = this.zeroChance;
-        const { zero, win } = this.sentences;
-
-        const zeroBool = Math.random() <= zeroChance / 100;
-
-        if (zeroBool) {
-            if (this.randomSentences) return {
-                value: 0,
-                sentence: zero[Math.floor(Math.random() * zero.length)]
-            };
-
-            return { value: 0 };
-        }
-
-        let output = min - 1;
-
-        while (output < min) {
-            output = Math.round(Math.random() * max);
-        }
-
-        if (this.randomSentences) return {
-            value: output,
-            sentence: win[Math.floor(Math.random() * win.length)]
-        };
-
-        return { value: output };
-    }
-
-    get sentences() {
-        return this._sentences;
-    }
-    /**
-     * @param {string} type
-     * @param {string} sentence 
-     */
-    addSentence(type, sentence) {
-        validateSentences(type, sentence);
-        this._sentences[type].push(sentence);
-        return this;
-    }
-
-    help() {
-        return super.help();
+        throw new Error(`The sentence is too short.`)
     }
 }

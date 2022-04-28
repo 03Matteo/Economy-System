@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 /**
- * 
  * @param {string} Mongo_URL - `The MongoDB connection string`
  * @param {boolean} log `Log if the connection has succeded`
  */
