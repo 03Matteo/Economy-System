@@ -3,24 +3,16 @@ require('dotenv').config()
 const Initialize = require('./start/initialize');
 const Help = require('./start/help');
 
-const earn = require('./exports/earn');
+const setMaxBagSize = require('./utils/setMaxBagSize');
 
-Initialize(process.env.mongo, false);
+const { Work, Slut, Rob, Crime } = require('./exports/earn');
 
-const a = new earn.Work({
-    userId: 'id',
-    minWin: 2,
-    maxWin: 5,
-    zeroChance: 30
-}).getData()
+//Initialize(process.env.mongo, true);
 
-const amount = a.data;
-a.save(true)
-
-console.log(amount)
 
 module.exports = {
     Initialize,
     Help,
-    earn
+    setMaxBagSize,
+    earn: { Work, Slut, Rob, Crime }
 }

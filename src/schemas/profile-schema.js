@@ -12,14 +12,21 @@ const reqNum = {
 }
 
 module.exports = model('currency-profiles', new Schema({
+    _ID: reqString,
     userId: reqString,
     lastUpdated: {
         type: Date,
         requried: true,
         default: new Date()
     },
-    bag: reqNum,
-    bank: reqNum,
+    bag: {
+        amount: reqNum,
+        maxSize: reqNum
+    },
+    bank: {
+        amount: reqNum,
+        maxSize: reqNum
+    },
     allCmds: {
         earn: {
             work: reqNum,

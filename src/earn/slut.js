@@ -1,43 +1,64 @@
 const Earn = require('../bases/earn');
 const profileSchema = require('../schemas/profile-schema');
 
-module.exports = class Work extends Earn {
+module.exports = class Slut extends Earn {
     constructor({
         userId,
         minWin,
         maxWin,
-        zeroChance
+        zeroChance,
+        minLose,
+        maxLose,
+        chance
     }) {
-        super(userId, minWin, maxWin, zeroChance);
+        super(userId, minWin, maxWin, zeroChance, minLose, maxLose, chance);
 
         this.userId = userId;
         this.minWin = minWin;
         this.maxWin = maxWin;
         this.zeroChance = zeroChance || 0;
+        this.minLose = minLose;
+        this.maxLose = maxLose;
+        this.chance = chance;
 
-        validateProps(this.userId, this.minWin, this.maxWin, this.zeroChance);
+        validateProps(this.userId, this.minWin, this.maxWin, this.zeroChance, this.minLose, this.maxLose, this.chance);
 
         this.value = null;
+        this.success = null;
     }
 
     getData() {
         const min = this.minWin;
         const max = this.maxWin;
         const zeroChance = this.zeroChance;
-        const value = this.value;
+        const minL = this.minLose;
+        const maxL = this.maxLose;
+        const chance = this.chance;
 
         const zeroBool = Math.random() <= zeroChance / 100;
         if (zeroBool) {
+            this.success = true;
             this.value = 0;
             return this;
         }
 
-        let output = min - 1;
-        while (output < min) {
-            output = Math.round(Math.random() * max);
+        const chanceBool = Math.random() <= chance / 100;
+        if (chanceBool) {
+            let output = min - 1;
+            while (output < min) {
+                output = Math.round(Math.random() * max);
+            }
+            this.success = true;
+            this.value = output;
+            return this;
         }
 
-        this.value = output;
+        let output = minL + 1;
+        while (output > minL) {
+            output = Math.round(Math.random() * maxL);
+        }
+        this.success = false;
+        this.value = -output;
         return this;
     }
 
@@ -53,8 +74,8 @@ module.exports = class Work extends Earn {
             userId: this.userId,
             lastUpdated: new Date(),
             $inc: {
-                'bag.amount': +this.value,
-                'allCmds.earn.work': + 1
+                'bag.amount': this.value,
+                'allCmds.earn.slut': + 1
             }
         }, {
             upsert: true
@@ -67,7 +88,7 @@ module.exports = class Work extends Earn {
     }
 }
 
-const validateProps = (userId, minWin, maxWin, zeroChance) => {
+const validateProps = (userId, minWin, maxWin, zeroChance, minLose, maxLose, chance) => {
 
     if (typeof userId !== 'string')
         throw new TypeError(`Cannot accept property 'userId' as ${typeof userId !== 'undefined' && userId !== null && typeof userId !== 'string' && (userId.length >= 0) ? 'array' : userId !== null ? typeof userId : null}.`);
@@ -88,4 +109,19 @@ const validateProps = (userId, minWin, maxWin, zeroChance) => {
         throw new TypeError(`Cannot accept property 'zeroChance' as ${typeof zeroChance !== 'undefined' && zeroChance !== null && typeof zeroChance !== 'string' && (zeroChance.length >= 0) ? 'array' : zeroChance !== null ? typeof zeroChance : null}.`);
     if (zeroChance < 0 || zeroChance > 100)
         throw new Error(`Be sure to set property 'zeroChance' between 0 and 100 (included).`);
+
+    if (typeof minLose !== 'number')
+        throw new TypeError(`Cannot accept property 'minLose' as ${typeof minLose !== 'undefined' && minLose !== null && typeof minLose !== 'string' && (minLose.length >= 0) ? 'array' : minLose !== null ? typeof minLose : null}.`);
+    if (typeof maxLose !== 'number')
+        throw new TypeError(`Cannot accept property 'maxLose' as ${typeof maxLose !== 'undefined' && maxLose !== null && typeof maxLose !== 'string'(maxLose.length >= 0) ? 'array' : maxLose !== null ? typeof maxLose : null}.`);
+
+    if (minLose <= 0 || maxLose <= 0)
+        throw new Error(`The property '${minLose <= 0 ? 'minLose' : 'maxLose'}' cannot be less or equal to zero.`);
+    if (minLose > maxLose)
+        throw new Error(`The property 'minLose' cannot be greater than 'maxLose'.`);
+
+    if (typeof chance !== 'number')
+        throw new TypeError(`Cannot accept property 'chance' as ${typeof chance !== 'undefined' && chance !== null && typeof chance !== 'string' && (chance.length >= 0) ? 'array' : chance !== null ? typeof chance : null}.`);
+    if (chance < 0 || chance > 100)
+        throw new Error(`Be sure to set property 'chance' between 0 and 100 (included).`);
 }
