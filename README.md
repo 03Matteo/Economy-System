@@ -4,7 +4,7 @@ A package that simplifies the creation of an economy system (database included).
 
 # Installation
 
-```@03matteo/economy-system```
+```npm i @03matteo/economy-system```
 
 Then ...
 
