@@ -1,5 +1,6 @@
 const Earn = require('../bases/earn');
 const profileSchema = require('../schemas/profile-schema');
+const getMaxBagSize = require('../utils/getMaxBagSize');
 
 module.exports = class Crime extends Earn {
     constructor({
@@ -24,10 +25,10 @@ module.exports = class Crime extends Earn {
         validateProps(this.userId, this.minWin, this.maxWin, this.zeroChance, this.minLose, this.maxLose, this.chance);
 
         this.value = null;
-        this.success = null;
+        this.bagFull = null
     }
 
-    getData() {
+    async getData() {
         const min = this.minWin;
         const max = this.maxWin;
         const zeroChance = this.zeroChance;
@@ -37,7 +38,6 @@ module.exports = class Crime extends Earn {
 
         const zeroBool = Math.random() <= zeroChance / 100;
         if (zeroBool) {
-            this.success = true;
             this.value = 0;
             return this;
         }
@@ -48,16 +48,14 @@ module.exports = class Crime extends Earn {
             while (output < min) {
                 output = Math.round(Math.random() * max);
             }
-            this.success = true;
             this.value = output;
             return this;
         }
 
-        let output = minL + 1;
-        while (output > minL) {
+        let output = minL - 1;
+        while (output < minL) {
             output = Math.round(Math.random() * maxL);
         }
-        this.success = false;
         this.value = -output;
         return this;
     }
@@ -65,6 +63,8 @@ module.exports = class Crime extends Earn {
     async save(log = false) {
         if (this.value === null)
             throw new Error(`You cannot call 'save()' before 'getData()'.`);
+
+        let maxSize = await getMaxBagSize();
 
         await profileSchema.findOneAndUpdate({
             _ID: 'all',
@@ -76,6 +76,9 @@ module.exports = class Crime extends Earn {
             $inc: {
                 'bag.amount': this.value,
                 'allCmds.earn.crime': + 1
+            },
+            $set: {
+                'bag.maxSize': maxSize
             }
         }, {
             upsert: true

@@ -5,9 +5,9 @@ module.exports = async (maxSize) => {
     if (typeof maxSize !== 'number')
         throw new Error(`The parameter 'maxSize' must be a number.`);
 
-    const result = await profileSchema.findOne({ _ID: 'all' })
+    const result = await profileSchema.findOne({ 'bag.maxSize': maxSize });
 
-    if (result.bag.maxSize === maxSize) return false;
+    if (result) return false;
 
     await profileSchema.updateMany({
         _ID: 'all'
@@ -17,5 +17,5 @@ module.exports = async (maxSize) => {
         }
     })
 
-    return true;
+    return maxSize;
 };
