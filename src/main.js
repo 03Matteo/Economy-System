@@ -15,16 +15,16 @@ const init = async () => {
     const a = new Crime({
         userId: '1',
         minWin: 10,
-        maxWin: 20,
+        maxWin: 15,
         minLose: 5,
         maxLose: 10,
         chance: 100
     })
 
-    const { value, bagEccess } = await a.getData()
+    const { value, bagEccess, currentAmount, maxSize } = await a.getData()
 
     await a.save()
-    console.log(value, bagEccess)
+    console.log(value, bagEccess, currentAmount, maxSize)
 }
 
 init();

@@ -25,8 +25,10 @@ module.exports = class Crime extends Earn {
 
         validateProps(this.userId, this.minWin, this.maxWin, this.zeroChance, this.minLose, this.maxLose, this.chance);
 
+        this.maxSize = 0;
         this.value = null;
-        this.bagEccess = null
+        this.bagEccess = 0;
+        this.currentAmount;
     }
 
     async getData() {
@@ -37,6 +39,7 @@ module.exports = class Crime extends Earn {
         const maxL = this.maxLose;
         const chance = this.chance;
         const { maxSize, bagAmount } = await getUserBag(this.userId);
+        this.maxSize = maxSize;
 
         const zeroBool = Math.random() <= zeroChance / 100;
         if (zeroBool) {
@@ -56,6 +59,7 @@ module.exports = class Crime extends Earn {
                 this.bagEccess = bagAmount + this.value - maxSize;
                 this.value = maxSize - bagAmount;
             }
+            this.currentAmount = bagAmount + this.value;
             return this;
         }
 
