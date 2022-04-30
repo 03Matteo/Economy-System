@@ -1,6 +1,7 @@
 const Earn = require('../bases/earn');
 const profileSchema = require('../schemas/profile-schema');
 const getMaxBagSize = require('../utils/getMaxBagSize');
+const getUserBag = require('../utils/checkUserBag');
 
 module.exports = class Crime extends Earn {
     constructor({
@@ -25,7 +26,7 @@ module.exports = class Crime extends Earn {
         validateProps(this.userId, this.minWin, this.maxWin, this.zeroChance, this.minLose, this.maxLose, this.chance);
 
         this.value = null;
-        this.bagFull = null
+        this.bagEccess = null
     }
 
     async getData() {
@@ -35,6 +36,7 @@ module.exports = class Crime extends Earn {
         const minL = this.minLose;
         const maxL = this.maxLose;
         const chance = this.chance;
+        const { maxSize, bagAmount } = await getUserBag(this.userId);
 
         const zeroBool = Math.random() <= zeroChance / 100;
         if (zeroBool) {
@@ -49,6 +51,11 @@ module.exports = class Crime extends Earn {
                 output = Math.round(Math.random() * max);
             }
             this.value = output;
+
+            if (bagAmount + this.value > maxSize) {
+                this.bagEccess = bagAmount + this.value - maxSize;
+                this.value = maxSize - bagAmount;
+            }
             return this;
         }
 
@@ -60,34 +67,36 @@ module.exports = class Crime extends Earn {
         return this;
     }
 
-    async save(log = false) {
-        if (this.value === null)
-            throw new Error(`You cannot call 'save()' before 'getData()'.`);
+    save(log = false) {
+        setTimeout(async () => {
+            if (this.value === null)
+                throw new Error(`You cannot call 'save()' before 'getData()'.`);
 
-        let maxSize = await getMaxBagSize();
+            let maxSize = await getMaxBagSize();
 
-        await profileSchema.findOneAndUpdate({
-            _ID: 'all',
-            userId: this.userId
-        }, {
-            _ID: 'all',
-            userId: this.userId,
-            lastUpdated: new Date(),
-            $inc: {
-                'bag.amount': this.value,
-                'allCmds.earn.crime': + 1
-            },
-            $set: {
-                'bag.maxSize': maxSize
-            }
-        }, {
-            upsert: true
-        }).then(() => {
-            if (typeof log === 'boolean' && log) {
-                const date = new Date();
-                console.log(`[${date.toLocaleDateString().replace(/\//g, '-')} | ${date.getHours()}:${date.getMinutes()}] Succesfully saved to MongoDB all data!`);
-            }
-        })
+            await profileSchema.findOneAndUpdate({
+                _ID: 'all',
+                userId: this.userId
+            }, {
+                _ID: 'all',
+                userId: this.userId,
+                lastUpdated: new Date(),
+                $inc: {
+                    'bag.amount': this.value,
+                    'allCmds.earn.crime': + 1
+                },
+                $set: {
+                    'bag.maxSize': maxSize
+                }
+            }, {
+                upsert: true
+            }).then(() => {
+                if (typeof log === 'boolean' && log) {
+                    const date = new Date();
+                    console.log(`[${date.toLocaleDateString().replace(/\//g, '-')} | ${date.getHours()}:${date.getMinutes()}] Succesfully saved to MongoDB all data!`);
+                }
+            })
+        }, 2000)
     }
 }
 

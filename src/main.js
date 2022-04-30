@@ -18,14 +18,13 @@ const init = async () => {
         maxWin: 20,
         minLose: 5,
         maxLose: 10,
-        chance: 50,
-        zeroChance: 20
+        chance: 100
     })
 
-    const data = await a.getData()
+    const { value, bagEccess } = await a.getData()
 
     await a.save()
-    console.log(a)
+    console.log(value, bagEccess)
 }
 
 init();

@@ -4,7 +4,7 @@ const getMaxBagSize = require('../utils/getMaxBagSize');
 module.exports = async (userId) => {
     const result = await profileSchema.findOne({ userId })
 
-    const maxSize = getMaxBagSize();
+    const maxSize = await getMaxBagSize();
     const bagAmount = result?.bag.amount || 0;
 
     return {
