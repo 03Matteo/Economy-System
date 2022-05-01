@@ -1,9 +1,4 @@
-module.exports = (name, userId, minWin, maxWin, minLose, maxLose, chance, zeroChance) => {
-
-    if (typeof name !== 'string')
-        throw new TypeError(`Cannot accept property 'name' as ${typeof name !== 'undefined' && name !== null && typeof name !== 'string' && (name.length >= 0) ? 'array' : name !== null ? typeof name : null}.`);
-    if (!name.length)
-        throw new TypeError(`Cannot accept property 'name' as an empty string.`);
+module.exports = (userId, minWin, maxWin, minLose, maxLose, chance, zeroChance) => {
 
     if (typeof userId !== 'string')
         throw new TypeError(`Cannot accept property 'userId' as ${typeof userId !== 'undefined' && userId !== null && typeof userId !== 'string' && (userId.length >= 0) ? 'array' : userId !== null ? typeof userId : null}.`);

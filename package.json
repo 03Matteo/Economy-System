@@ -4,7 +4,8 @@
   "description": "A package that simplifies the creation of an economy system (database included).",
   "main": "./src/main.js",
   "scripts": {
-    "dev": "nodemon ."
+    "dev": "nodemon .",
+    "start": "node ."
   },
   "repository": {
     "type": "git",

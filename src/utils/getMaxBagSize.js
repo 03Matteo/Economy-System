@@ -7,7 +7,7 @@ module.exports = async () => {
     for (const profile of result) {
         if (done) return;
 
-        if (profile.bag?.maxSize !== undefined) {
+        if (profile?.bag?.maxSize !== undefined) {
             done = true;
             return profile.bag.maxSize;
         }

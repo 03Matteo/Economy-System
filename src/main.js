@@ -4,13 +4,14 @@ const Initialize = require('./start/initialize');
 const Help = require('./start/help');
 
 const setMaxBagSize = require('./utils/setMaxBagSize');
+const newUser = require('./utils/newUser');
 
 const Earn = require('./bases/earn');
 
 const init = async () => {
     await Initialize(process.env.mongo);
 
-    await setMaxBagSize(100)
+    await setMaxBagSize(100, true)
 
     const a = new Earn({
         userId: '1',
@@ -21,10 +22,11 @@ const init = async () => {
         chance: 100
     })
 
-    const { value, bagEccess, currentAmount, maxSize } = await a.getData()
+    const { value, bagEccess, currentBagAmount, maxSize, cmdExecuted } = await a.getData()
 
-    await a.save()
-    console.log(value, bagEccess, currentAmount, maxSize)
+    await a.save(true)
+
+    console.log(`output: ${value}\neccess: ${bagEccess}\ncurrentBagAmount: ${currentBagAmount}\nmaxSize: ${maxSize}\nexecuted: ${cmdExecuted}`)
 }
 
 init();
@@ -33,5 +35,6 @@ module.exports = {
     Initialize,
     Help,
     setMaxBagSize,
+    newUser,
     Earn
 }

@@ -16,6 +16,4 @@ module.exports = async (maxSize) => {
             'bag.maxSize': maxSize
         }
     })
-
-    return maxSize;
 };

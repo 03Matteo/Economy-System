@@ -1,11 +1,11 @@
 const profileSchema = require('../schemas/profile-schema');
 const getMaxBagSize = require('../utils/getMaxBagSize');
 const getUserBag = require('../utils/checkUserBag');
+const getUserCommands = require('../utils/getUserCommands');
 const validateProps = require('../utils/validateProps');
 
 module.exports = class Earn {
     constructor({
-        name,
         userId,
         minWin,
         maxWin,
@@ -14,7 +14,6 @@ module.exports = class Earn {
         chance,
         zeroChance
     }) {
-        this.name = name;
         this.userId = userId;
         this.minWin = minWin;
         this.maxWin = maxWin;
@@ -23,10 +22,11 @@ module.exports = class Earn {
         this.chance = chance || 100;
         this.zeroChance = zeroChance || 0;
 
-        validateProps(this.name, this.userId, this.minWin, this.maxWin, this.minLose, this.maxLose, this.chance, this.zeroChance);
+        validateProps(this.userId, this.minWin, this.maxWin, this.minLose, this.maxLose, this.chance, this.zeroChance);
 
-        this.maxSize = getMaxBagSize();
+        this.cmdExecuted = getUserCommands(this.userId, 'earn');
         this.currentBagAmount = getUserBag(this.userId);
+        this.maxSize = getMaxBagSize();
 
         this.value = null;
         this.bagEccess = 0;
@@ -35,12 +35,12 @@ module.exports = class Earn {
     async getData() {
         const min = this.minWin;
         const max = this.maxWin;
-        const zeroChance = this.zeroChance;
         const minL = this.minLose;
         const maxL = this.maxLose;
         const chance = this.chance;
-        const bagAmount = (await this.currentBagAmount).bagAmount;
+        const zeroChance = this.zeroChance;
         const maxSize = await this.maxSize;
+        const bagAmount = await this.currentBagAmount;
 
         const zeroBool = Math.random() <= zeroChance / 100;
         if (zeroBool) {
@@ -72,12 +72,10 @@ module.exports = class Earn {
         return this;
     }
 
-    save(log = false) {
-        setTimeout(async () => {
+    async save(log = false) {
+        await setTimeout(async () => {
             if (this.value === null)
                 throw new Error(`You cannot call 'save()' before 'getData()'.`);
-
-            let maxSize = await getMaxBagSize();
 
             await profileSchema.findOneAndUpdate({
                 _ID: 'all',
@@ -88,10 +86,10 @@ module.exports = class Earn {
                 lastUpdated: new Date(),
                 $inc: {
                     'bag.amount': this.value,
-                    'allCmds.earn.crime': + 1
+                    'allCmds.earn': + 1
                 },
                 $set: {
-                    'bag.maxSize': maxSize
+                    'bag.maxSize': this.maxSize
                 }
             }, {
                 upsert: true

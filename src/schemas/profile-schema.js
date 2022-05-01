@@ -28,10 +28,7 @@ module.exports = model('currency-profiles', new Schema({
         maxSize: reqNum
     },
     allCmds: {
-        earn: [Object],
-        inv: {
-            bag: reqNum,
-            bank: reqNum
-        }
+        earn: reqNum,
+        inv: reqNum
     }
 }))
