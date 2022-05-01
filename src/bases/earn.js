@@ -26,7 +26,7 @@ module.exports = class Earn {
         validateProps(this.name, this.userId, this.minWin, this.maxWin, this.minLose, this.maxLose, this.chance, this.zeroChance);
 
         this.maxSize = getMaxBagSize();
-        this.currentBagAmount;
+        this.currentBagAmount = getUserBag(this.userId);
 
         this.value = null;
         this.bagEccess = 0;
@@ -39,8 +39,8 @@ module.exports = class Earn {
         const minL = this.minLose;
         const maxL = this.maxLose;
         const chance = this.chance;
-        const { maxSize, bagAmount } = await getUserBag(this.userId);
-        this.maxSize = maxSize;
+        const bagAmount = (await this.currentBagAmount).bagAmount;
+        const maxSize = await this.maxSize;
 
         const zeroBool = Math.random() <= zeroChance / 100;
         if (zeroBool) {
