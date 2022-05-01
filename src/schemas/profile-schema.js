@@ -28,12 +28,7 @@ module.exports = model('currency-profiles', new Schema({
         maxSize: reqNum
     },
     allCmds: {
-        earn: {
-            work: reqNum,
-            slut: reqNum,
-            rob: reqNum,
-            crime: reqNum
-        },
+        earn: [Object],
         inv: {
             bag: reqNum,
             bank: reqNum

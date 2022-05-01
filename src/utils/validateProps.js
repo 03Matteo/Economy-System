@@ -1,94 +1,9 @@
-const Earn = require('../bases/earn');
-const profileSchema = require('../schemas/profile-schema');
+module.exports = (name, userId, minWin, maxWin, minLose, maxLose, chance, zeroChance) => {
 
-module.exports = class Slut extends Earn {
-    constructor({
-        userId,
-        minWin,
-        maxWin,
-        zeroChance,
-        minLose,
-        maxLose,
-        chance
-    }) {
-        super(userId, minWin, maxWin, zeroChance, minLose, maxLose, chance);
-
-        this.userId = userId;
-        this.minWin = minWin;
-        this.maxWin = maxWin;
-        this.zeroChance = zeroChance || 0;
-        this.minLose = minLose;
-        this.maxLose = maxLose;
-        this.chance = chance;
-
-        validateProps(this.userId, this.minWin, this.maxWin, this.zeroChance, this.minLose, this.maxLose, this.chance);
-
-        this.value = null;
-        this.success = null;
-    }
-
-    getData() {
-        const min = this.minWin;
-        const max = this.maxWin;
-        const zeroChance = this.zeroChance;
-        const minL = this.minLose;
-        const maxL = this.maxLose;
-        const chance = this.chance;
-
-        const zeroBool = Math.random() <= zeroChance / 100;
-        if (zeroBool) {
-            this.success = true;
-            this.value = 0;
-            return this;
-        }
-
-        const chanceBool = Math.random() <= chance / 100;
-        if (chanceBool) {
-            let output = min - 1;
-            while (output < min) {
-                output = Math.round(Math.random() * max);
-            }
-            this.success = true;
-            this.value = output;
-            return this;
-        }
-
-        let output = minL + 1;
-        while (output > minL) {
-            output = Math.round(Math.random() * maxL);
-        }
-        this.success = false;
-        this.value = -output;
-        return this;
-    }
-
-    async save(log = false) {
-        if (this.value === null)
-            throw new Error(`You cannot call 'save()' before 'getData()'.`);
-
-        await profileSchema.findOneAndUpdate({
-            _ID: 'all',
-            userId: this.userId
-        }, {
-            _ID: 'all',
-            userId: this.userId,
-            lastUpdated: new Date(),
-            $inc: {
-                'bag.amount': this.value,
-                'allCmds.earn.slut': + 1
-            }
-        }, {
-            upsert: true
-        }).then(() => {
-            if (typeof log === 'boolean' && log) {
-                const date = new Date();
-                console.log(`[${date.toLocaleDateString().replace(/\//g, '-')} | ${date.getHours()}:${date.getMinutes()}] Succesfully saved to MongoDB all data!`);
-            }
-        })
-    }
-}
-
-const validateProps = (userId, minWin, maxWin, zeroChance, minLose, maxLose, chance) => {
+    if (typeof name !== 'string')
+        throw new TypeError(`Cannot accept property 'name' as ${typeof name !== 'undefined' && name !== null && typeof name !== 'string' && (name.length >= 0) ? 'array' : name !== null ? typeof name : null}.`);
+    if (!name.length)
+        throw new TypeError(`Cannot accept property 'name' as an empty string.`);
 
     if (typeof userId !== 'string')
         throw new TypeError(`Cannot accept property 'userId' as ${typeof userId !== 'undefined' && userId !== null && typeof userId !== 'string' && (userId.length >= 0) ? 'array' : userId !== null ? typeof userId : null}.`);
