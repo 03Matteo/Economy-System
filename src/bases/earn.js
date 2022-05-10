@@ -1,8 +1,10 @@
+const mongoose = require('mongoose');
 const profileSchema = require('../schemas/profile-schema');
 const getMaxBagSize = require('../utils/getMaxBagSize');
 const getUserBag = require('../utils/checkUserBag');
 const getUserCommands = require('../utils/getUserCommands');
 const validateProps = require('../utils/validateProps');
+const connected = mongoose.connection._hasOpened;
 
 module.exports = class Earn {
     constructor({
@@ -24,12 +26,18 @@ module.exports = class Earn {
 
         validateProps(this.userId, this.minWin, this.maxWin, this.minLose, this.maxLose, this.chance, this.zeroChance);
 
-        this.cmdExecuted = getUserCommands(this.userId, 'earn');
-        this.currentBagAmount = getUserBag(this.userId);
-        this.maxSize = getMaxBagSize();
+        this.cmdExecuted = null;
+        this.currentBagAmount = null;
+        this.maxSize = null;
+
+        if (connected) {
+            this.cmdExecuted = getUserCommands(this.userId, 'earn');
+            this.currentBagAmount = getUserBag(this.userId);
+            this.maxSize = getMaxBagSize();
+        }
 
         this.value = null;
-        this.bagEccess = 0;
+        this.bagEccess = null;
     }
 
     async getData() {
@@ -56,11 +64,13 @@ module.exports = class Earn {
             }
             this.value = output;
 
-            if (bagAmount + this.value > maxSize) {
-                this.bagEccess = bagAmount + this.value - maxSize;
-                this.value = maxSize - bagAmount;
+            if (connected) {
+                if (bagAmount + this.value > maxSize) {
+                    this.bagEccess = bagAmount + this.value - maxSize;
+                    this.value = maxSize - bagAmount;
+                }
+                this.currentBagAmount = bagAmount + this.value;
             }
-            this.currentBagAmount = bagAmount + this.value;
             return this;
         }
 

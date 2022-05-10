@@ -11,7 +11,9 @@ const reqNum = {
     default: 0
 }
 
-module.exports = model('currency-profiles', new Schema({
+const collection = 'economy-profiles';
+
+module.exports = model(collection, new Schema({
     _ID: reqString,
     userId: reqString,
     lastUpdated: {
@@ -23,12 +25,7 @@ module.exports = model('currency-profiles', new Schema({
         amount: reqNum,
         maxSize: reqNum
     },
-    bank: {
-        amount: reqNum,
-        maxSize: reqNum
-    },
     allCmds: {
-        earn: reqNum,
-        inv: reqNum
+        earn: reqNum
     }
-}))
+}), collection);
