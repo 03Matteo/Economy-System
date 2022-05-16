@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 //Connect to MongoDB
 const Initialize = require('./src/start/initialize');
 
