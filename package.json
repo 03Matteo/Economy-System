@@ -21,8 +21,5 @@
   "bugs": {
     "url": "https://github.com/03Matteo/Economy-System/issues"
   },
-  "homepage": "https://github.com/03Matteo/Economy-System#readme",
-  "dependencies": {
-    "mongoose": "^6.3.1"
-  }
+  "homepage": "https://github.com/03Matteo/Economy-System#readme"
 }

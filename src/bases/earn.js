@@ -1,10 +1,4 @@
-const mongoose = require('mongoose');
-const profileSchema = require('../schemas/profile-schema');
-const getMaxBagSize = require('../utils/getMaxBagSize');
-const getUserBag = require('../utils/checkUserBag');
-const getUserCommands = require('../utils/getUserCommands');
 const validateProps = require('../utils/validateProps');
-const connected = mongoose.connection._hasOpened;
 
 module.exports = class Earn {
     constructor({
@@ -26,18 +20,7 @@ module.exports = class Earn {
 
         validateProps(this.userId, this.minWin, this.maxWin, this.minLose, this.maxLose, this.chance, this.zeroChance);
 
-        this.cmdExecuted = null;
-        this.currentBagAmount = null;
-        this.maxSize = null;
-
-        if (connected) {
-            this.cmdExecuted = getUserCommands(this.userId, 'earn');
-            this.currentBagAmount = getUserBag(this.userId);
-            this.maxSize = getMaxBagSize();
-        }
-
         this.value = null;
-        this.bagEccess = null;
     }
 
     async getData() {
@@ -47,8 +30,6 @@ module.exports = class Earn {
         const maxL = this.maxLose;
         const chance = this.chance;
         const zeroChance = this.zeroChance;
-        const maxSize = await this.maxSize;
-        const bagAmount = await this.currentBagAmount;
 
         const zeroBool = Math.random() <= zeroChance / 100;
         if (zeroBool) {
@@ -63,14 +44,6 @@ module.exports = class Earn {
                 output = Math.round(Math.random() * max);
             }
             this.value = output;
-
-            if (connected) {
-                if (bagAmount + this.value > maxSize) {
-                    this.bagEccess = bagAmount + this.value - maxSize;
-                    this.value = maxSize - bagAmount;
-                }
-                this.currentBagAmount = bagAmount + this.value;
-            }
             return this;
         }
 
@@ -80,40 +53,5 @@ module.exports = class Earn {
         }
         this.value = -output;
         return this;
-    }
-
-    async save(schema, log = false) {
-        await setTimeout(async () => {
-
-            if (['boolean', 'string', 'number', 'object'].some(t => typeof schema === t) ||
-                ([null, undefined].some(n => schema === n)))
-                throw new TypeError('The first parameter of save() must be a mongoose model. Example: @03matteo/economy-system/src/schemas/profile-schema.js');
-
-            if (this.value === null)
-                throw new Error(`You cannot call 'save()' before 'getData()'.`);
-
-            await schema.findOneAndUpdate({
-                _ID: 'all',
-                userId: this.userId
-            }, {
-                _ID: 'all',
-                userId: this.userId,
-                lastUpdated: new Date(),
-                $inc: {
-                    'bag.amount': this.value,
-                    'allCmds.earn': + 1
-                },
-                $set: {
-                    'bag.maxSize': this.maxSize
-                }
-            }, {
-                upsert: true
-            }).then(() => {
-                if (typeof log === 'boolean' && log) {
-                    const date = new Date();
-                    console.log(`[${date.toLocaleDateString().replace(/\//g, '-')} | ${date.getHours()}:${date.getMinutes()}] Succesfully saved to MongoDB all data!`);
-                }
-            })
-        }, 2000)
     }
 }
