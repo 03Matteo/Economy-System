@@ -23,7 +23,7 @@ module.exports = class Earn {
         this.value = null;
     }
 
-    async getData() {
+    getData() {
         const min = this.minWin;
         const max = this.maxWin;
         const minL = this.minLose;
