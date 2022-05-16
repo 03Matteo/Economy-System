@@ -19,8 +19,8 @@ module.exports = class Earn {
         this.userId = userId;
         this.minWin = minWin;
         this.maxWin = maxWin;
-        this.minLose = minLose;
-        this.maxLose = maxLose;
+        this.minLose = minLose || 1;
+        this.maxLose = maxLose || 1;
         this.chance = chance || 100;
         this.zeroChance = zeroChance || 0;
 

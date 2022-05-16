@@ -57,11 +57,11 @@ b. In the case you don't want it, you don't need to add anything in the main fil
    -
    To get the data of the instance add:
    -
-   const data = instance.getData();
+   const data = await instance.getData(); //be sure to be inside an asyncronous function
    -
    To save all the data in the database add:
    -
-    instance.save(true);
+    (await) instance.save(true);
     //If you add true there will be a console log of confirm
    -
    Be careful to call getData() before save().
