@@ -82,12 +82,17 @@ module.exports = class Earn {
         return this;
     }
 
-    async save(log = false) {
+    async save(schema, log = false) {
         await setTimeout(async () => {
+
+            if (['boolean', 'string', 'number', 'object'].some(t => typeof schema === t) ||
+                ([null, undefined].some(n => schema === n)))
+                throw new TypeError('The first parameter of save() must be a mongoose model. Example: @03matteo/economy-system/src/schemas/profile-schema.js');
+
             if (this.value === null)
                 throw new Error(`You cannot call 'save()' before 'getData()'.`);
 
-            await profileSchema.findOneAndUpdate({
+            await schema.findOneAndUpdate({
                 _ID: 'all',
                 userId: this.userId
             }, {

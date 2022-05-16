@@ -61,7 +61,8 @@ b. In the case you don't want it, you don't need to add anything in the main fil
    -
    To save all the data in the database add:
    -
-    (await) instance.save(true);
+    (await) instance.save(schema, true); 
+    //be sure to change 'schema' with a mongoose model similar to this (@03matteo/economy-system/src/schemas/profile-schema.js)
     //If you add true there will be a console log of confirm
    -
    Be careful to call getData() before save().
