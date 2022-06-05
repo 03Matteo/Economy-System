@@ -2,7 +2,6 @@ const validateProps = require('../utils/validateProps');
 
 module.exports = class Earn {
     constructor({
-        userId,
         minWin,
         maxWin,
         minLose,
@@ -10,7 +9,6 @@ module.exports = class Earn {
         chance,
         zeroChance
     }) {
-        this.userId = userId;
         this.minWin = minWin;
         this.maxWin = maxWin;
         this.minLose = minLose || 1;
@@ -18,7 +16,7 @@ module.exports = class Earn {
         this.chance = chance || 100;
         this.zeroChance = zeroChance || 0;
 
-        validateProps(this.userId, this.minWin, this.maxWin, this.minLose, this.maxLose, this.chance, this.zeroChance);
+        validateProps(this.minWin, this.maxWin, this.minLose, this.maxLose, this.chance, this.zeroChance);
 
         this.value = null;
     }
